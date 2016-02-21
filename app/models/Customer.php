@@ -1,6 +1,6 @@
 <?php
 
-class Customer extends Eloquent{
+class Customer extends Eloquent{		
 	
 	    protected $fillable = array(
 			'id',
@@ -18,13 +18,15 @@ class Customer extends Eloquent{
 			'updated_at',
 			'prepay_amount',
 			'email',
-			'is_auto_invoice'
+			'is_auto_invoice',
+			'user_id'
 	    	);
 
 
 	    public static function count(){
+	    	$user_id = Auth::user()->id;
 
-	    	$result = DB::select('select count(*) as count from customers'); 
+	    	$result = DB::select("select count(*) as count from customers where user_id = {$user_id}"); 
 
 	    	return $result;
 
@@ -37,8 +39,11 @@ class Customer extends Eloquent{
 
 
 	    public static function count_by_start_date(){
+	    	$user_id = Auth::user()->id;
+
 	    	$query = "
 	    	SELECT distinct date_format(created_at,'%Y-%m') as x, count(*) as y FROM laravel.customers
+	    	where user_id = {$user_id}	    	
 			group by x order by x asc
 	    	";
 
@@ -56,9 +61,12 @@ class Customer extends Eloquent{
 
 
 	    public static function count_by_customer(){
+	    	$user_id = Auth::user()->id;
+
 	    	$query = "
 	    		SELECT name as x,  count(*) as y FROM laravel.invoices i
 				join laravel.customers c on c.id = i.customer_id 
+				where c.user_id = {$user_id}
 				group by customer_id
 				order by y desc
 	    	";
@@ -75,9 +83,12 @@ class Customer extends Eloquent{
 		}
 
 		public static function count_by_customer_bar(){
+			$user_id = Auth::user()->id;
+
 	    	$query = "
 	    		SELECT name as x,  count(*) as y FROM laravel.invoices i
 				join laravel.customers c on c.id = i.customer_id 
+				where c.user_id = {$user_id}
 				group by customer_id
 				order by y desc
 	    	";
@@ -96,10 +107,13 @@ class Customer extends Eloquent{
 		
 
 		public static function invoiced_total_by_customer(){
+			$user_id = Auth::user()->id;
+
 	    	$query = "
 	    		SELECT name as x,  sum(prepay_amount) as y FROM laravel.invoices i
 				join laravel.customers c on c.id = i.customer_id 
                 where i.sent_date is not null
+                and c.user_id = {$user_id}
 				group by customer_id
 				order by y desc
 	    	";
@@ -116,10 +130,13 @@ class Customer extends Eloquent{
 		}
 
 		public static function invoiced_total_by_customer_bar(){
+			$user_id = Auth::user()->id;
+
 	    	$query = "
 	    		SELECT name as x,  sum(prepay_amount) as y FROM laravel.invoices i
 				join laravel.customers c on c.id = i.customer_id 
                 where i.sent_date is not null
+                and c.user_id = {$user_id}
 				group by customer_id
 				order by y desc
 	    	";
@@ -138,10 +155,13 @@ class Customer extends Eloquent{
 
 
 		public static function invoiced_total_by_customer_pie(){
+			$user_id = Auth::user()->id;
+
 	    	$query = "
 	    		SELECT name as x,  sum(prepay_amount) as y FROM laravel.invoices i
 				join laravel.customers c on c.id = i.customer_id 
                 where i.sent_date is not null
+                and c.user_id = {$user_id}
 				group by customer_id
 	    	";
 

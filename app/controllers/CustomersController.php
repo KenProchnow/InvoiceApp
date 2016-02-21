@@ -13,6 +13,10 @@ class CustomersController extends \BaseController {
 		
 			        $this->beforeFilter('auth', array('except' => 'getLogin'));
 
+			
+			
+
+
 		if(Input::get('sid') || Input::get('name') || Input::get('prepay_amount')){
 			// Sets the parameters from the get request to the variables.
 	        $sid = Input::get('sid');
@@ -24,7 +28,8 @@ class CustomersController extends \BaseController {
 	            // ->where('name', '=', '%'.$name.'%')
 	            ->where('sid', 'like', '%'.$sid.'%')
 	            ->where('name', 'like', '%'.$name.'%')
-	            ->where('prepay_amount', '>=', $prepay_amount)
+	            ->where('prepay_amount', '>=', $prepay_amount)	
+	            ->where('user_id', '=', Auth::user()->id)// -------------------------------------------------only logged in user            
 	            ->get();
 	        
 	        $paginate = false;
@@ -40,7 +45,9 @@ class CustomersController extends \BaseController {
 	        $name = "";
 	        $prepay_amount = "";
 
-			$customers = Customer::paginate(15);	
+	        
+			$customers = Customer::where('user_id',Auth::user()->id)->paginate(15);// -------------------------------------------------only logged in user
+
 			// $customers = Customer::orderBy('id')->paginate(15);	
 			// $customers = Customer::all();
 			
@@ -68,7 +75,7 @@ class CustomersController extends \BaseController {
 	public function updateCustomerRecord($id,$value)
     {
     	
-    	$customer = Customer::findOrFail($id);
+    	$customer = Customer::where('user_id',Auth::user()->id)->findOrFail($id);
     	$customer->is_auto_invoice = $value;    	
     	$customer->update();
 
@@ -84,7 +91,7 @@ class CustomersController extends \BaseController {
 
 		// })->export('xls');
 
-		$customers = Customer::all();
+		$customers = Customer::where('user_id',Auth::user()->id)->get();
 
 		$date = date("Y/m/d");
 		Excel::create('Prepay_Customers_as_of_'.$date, function($excel) use($customers) {
@@ -124,8 +131,11 @@ class CustomersController extends \BaseController {
 
 		$formtype = Input::get('form_type');
 
+
 		if($formtype == 'one_entry'){
 			$input = Input::all();
+			$input['user_id'] = Auth::user()->id;
+			// dd($input);
 			// return var_dump($input);
 			Customer::create($input);
 		}
@@ -144,8 +154,6 @@ class CustomersController extends \BaseController {
 		        
 		        ini_set("auto_detect_line_endings", "1");
 
-			    
-
 
 				// if ($handle) {
 				//     while ($line = fgetcsv($handle)) {
@@ -156,7 +164,7 @@ class CustomersController extends \BaseController {
 				// 
 			// TRIAL 2
 
-
+		        $user_id = Auth::user()->id;
 			    $results = Excel::load('public/uploads/CSV/'.$name)->get();
 
 			    // var_dump($results);
@@ -172,19 +180,10 @@ class CustomersController extends \BaseController {
 						'zip'=>$row->zip,
 						'credit_limit'=>$row->credit_limit,
 						'prepay_amount'=>$row->prepay_amount,
-						'email'=>$row->email
+						'email'=>$row->email,
+						'user_id'=>$user_id
 			    		]);
 			    }
-
-
-
-
-			    
-
-
-
-
-
 
 			// TRIAL 1
 
@@ -215,22 +214,9 @@ class CustomersController extends \BaseController {
 				// 		);
 
 				// 	}
-				// 	fclose($file_handle);
-					
-				
-				// 	return "success";
-				
-				// // echo '<pre>';
-				
-				// // echo '</pre>';
-
-				// // return 'Ok'; // return for testing
+				// 	fclose($file_handle);									
 		    
 		}
-
-		
-
-
 
 		return Redirect::route('customers.index')->withMessage('successfully created new customer')->withMessage_status("success");
 
@@ -248,9 +234,7 @@ class CustomersController extends \BaseController {
 		$pdf->loadHTML($template);
 		$pdf->render();
 		file_put_contents('app/views/customers/pdfs/pdf_testing.pdf', $pdf->output());
-
-
-		
+	
 		// $output = $dompdf->output();
 		// file_put_contents("/pdf_path/file.pdf", $output);
 
@@ -280,7 +264,11 @@ class CustomersController extends \BaseController {
 	 */
 	public function edit($id)
 	{
-		$customer = Customer::findOrFail($id);
+		
+		
+		
+		
+		$customer = Customer::where('user_id',Auth::user()->id)->findOrFail($id);// -------------------------------------------------only logged in user			
 
 		$invoices = DB::table('invoices')->where('customer_id', $id)->orderBy('id','desc')->get();
 
@@ -298,7 +286,7 @@ class CustomersController extends \BaseController {
 	 */
 	public function update($id)
 	{
-		$customer = Customer::findOrFail($id);
+		$customer = Customer::where('user_id',Auth::user()->id)->findOrFail($id);
 		$post_data = Input::all();
 		$customer->fill($post_data);
 		$customer->update($post_data);
@@ -317,7 +305,7 @@ class CustomersController extends \BaseController {
 	 */
 	public function destroy($id)
 	{
-		$customer = Customer::findOrFail($id);
+		$customer = Customer::where('user_id',Auth::user()->id)->findOrFail($id);
 		$customer->delete();
 		$message = 'Customer Deleted';
 		$message_status = 'success';

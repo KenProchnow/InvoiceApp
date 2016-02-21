@@ -1,7 +1,7 @@
 @extends('templates/main')
 @section('content')	
 
-<h3>Settings:</h3>
+<h3>Update Info:</h3>
 
 
 <div class="container">
@@ -10,15 +10,15 @@
 {{-- 
 {{ Form::open( array('route' => 'settings.update','class' => 'form-horizontal') )}} 
 --}}
-{{ Form::model($settings, array('route'=> ['settings.update',$settings->id], 'method'=>'PUT','class' => 'form-horizontal' ) )}}
 <div class="col-sm-2">
-
 </div>
 
 <div class="col-sm-10">
-<h3>Update info:</h3>
+
 <br>
 </div>
+
+{{ Form::model($settings, array('route'=> ['settings.update',$settings->id], 'method'=>'PUT','class' => 'form-horizontal' ) )}}
 
 <div class="form-group">
     <label for="inputEmail3" class="col-sm-2 control-label">Company Name</label>
@@ -89,59 +89,43 @@
     </div>
 </div>
 
-
-
-{{-- <div class="form-group">
-    <label for="inputEmail3" class="col-sm-2 control-label">Gmail token</label>
-    <div class="col-sm-10">
-{{ Form::text('email_token',$settings->email_token,array('class' => 'form-control', 'placeholder' => 'email')) }}
-    </div>
-</div> --}}
-
-
-  <div class="form-group">
+<div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
       {{ Form::submit('Update',array('class'=>'btn btn-info')) }}  
     </div>
-  </div>
+    <div class="col-sm-10">
+    </div>
+</div>
 
 {{ Form::close() }}	
 
-
-  <br/>
-
-
-
 {{ Form::open( array('route'=> ['settings.store'],'files'=>true) )}}
 
+<div class="col-sm-12">
+    <h3>Upload or Change your logo:</h3>
+</div>
 
 <div class="form-group">
-    <label for="inputEmail3" class="col-sm-2 control-label">Upload Your Logo</label>
-    <div class="col-sm-10">
-    {{ Form::file('file',array('class'=>'') ) }}
+    <label for="inputEmail3" class="col-sm-3 control-label">Upload Your Logo</label>
+    <div class="col-sm-5">
+{{ Form::file('file',array('class'=>'') ) }}
     </div>
 </div>
 <!-- submit buttons -->
 
-<div class="col-sm-2">
-
+<div class="col-sm-1">
+    {{ Form::submit('Upload',array('class'=>'btn btn-info')) }}
 </div>
 <br/><br/>
 <div class="col-sm-10">
 
-  {{ Form::submit('Create',array('class'=>'btn btn-info')) }}
 </div>
-
-
 
 {{ Form::close() }} 
 
-
 </div>    {{-- end of first half --}}
 
-
 <div class="col-sm-1 gutter">
-
 </div>
 
 <div class="col-sm-5">
@@ -159,12 +143,8 @@
 {{ $settings->state }}
 <br>
 {{ $settings->zip }}
-<br>
+<br><br><br>
 {{ HTML::image('uploads/logo/'.$settings->logo,'logo',array('width' => '300px')) }}
-
-
-
-
 
 
 </div> {{-- end of second half --}}

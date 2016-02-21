@@ -10,30 +10,19 @@ class SettingsController extends \BaseController {
 	public function index()
 	{
 
-		$email = Auth::user()->email;		
-		$user = DB::table('users')	            
-	            // ->where('name', '=', '%'.$name.'%')
-	            ->where('email', '=', $email)	           
+		// $email = Auth::user()->email;		
+		// $user = DB::table('users')	            
+	 //            ->where('email', '=', $email)	           
+	 //            ->first();	      
+
+	     $settings = DB::table('settings')	            	            
+	            ->where('user_id', '=', Auth::user()->id)	           
 	            ->first();
 
-	      // return var_dump($user->id);
-
-	     $user_settings = DB::table('settings')	            
-	            // ->where('name', '=', '%'.$name.'%')
-	            ->where('user_id', '=', $user->id)	           
-	            ->first();
-
-	     // return var_dump($user_settings);
-
-	     if($user_settings){
-	     	// return 'not null';
-	     	$settings = Setting::all()->first();
-			// return var_dump($settings);	     	
+	     if($settings){	     	
 	     	return View::make('settings.edit')->with('settings',$settings);
 	     }
-
-	     if($user_settings==null){
-	     	// return 'null';
+	     if($settings==null){	     	
 	     	return View::make('settings.index');
 	     }
 		
@@ -71,31 +60,17 @@ class SettingsController extends \BaseController {
 	        $filename = time() . '-' . $image->getClientOriginalName();
 	        
 	        // Moves file to folder on server
-	        $image->move(public_path() . '/uploads/Logo/', $filename);
+	        $image->move(public_path() . '/uploads/Logo/', $filename);	        
 
+									        // old and has been REFACTORED below
+								      		// $user_id = Auth::user()->id;
+								      		// $setting = DB::table('settings')	            
+										    // ->where('user_id', '=', $user_id)	           
+								      		// ->first();
+									     	// $setting = Setting::findOrFail($setting->id);	        
 
-												        // $user->logo = $filename;
-												        // dd($user);
-												        // $user->update();
-	        
-	        // REFACTOR THIS - get the user
-			// $email = Auth::user()->email;
-			// $user = DB::table('users')	            
-		 //    ->where('email', '=', $email)	           
-   //          ->first();
-		 //     										// return var_dump($user->id);	     
-   //          $userid = $user->id;
-
-			// $user = DB::table('settings')	            
-		 //    ->where('user_id', '=', $userid)	           
-   //          ->first();
-
-	        // REFACTORED
-            $user_id = Auth::user()->id;
-            $setting = DB::table('settings')	            
-		    ->where('user_id', '=', $user_id)	           
-            ->first();
-	        $setting = Setting::findOrFail($setting->id);	        
+	        $setting = Setting::where('user_id',Auth::user()->id)->first();
+	     
             $setting->logo = $filename;
             $setting->update();
 
@@ -103,17 +78,19 @@ class SettingsController extends \BaseController {
 
 
 		}else{
-			$email = Auth::user()->email;
-			// return var_dump($email);
+			// $email = Auth::user()->email;
+			// // return var_dump($email);
 			
-			$user = DB::table('users')	            
-		            // ->where('name', '=', '%'.$name.'%')
-		            ->where('email', '=', $email)	           
-		            ->first();
-		     // return var_dump($user->id);	     
+			// $user = DB::table('users')	            
+		 //            // ->where('name', '=', '%'.$name.'%')
+		 //            ->where('email', '=', $email)	           
+		 //            ->first();
+		 //     // return var_dump($user->id);	
+		     
+		     // $user = User::where('user_id',Auth::user()->id)->first();     
 
 			$input = Input::all();
-			$input['user_id'] = $user->id;
+			$input['user_id'] = Auth::user()->id;
 
 			// return var_dump($input);
 			Setting::create($input);	

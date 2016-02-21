@@ -14,7 +14,7 @@ class InvoiceController extends \BaseController {
 		// var_dump($invoices);
 
 		
-		if(Input::get('sid') || Input::get('name') || Input::get('sent_date')){
+		if(Input::get('sid') || Input::get('name') ){
 			// Sets the parameters from the get request to the variables.
 	        $sid = Input::get('sid');
 	        $name = Input::get('name');
@@ -26,11 +26,10 @@ class InvoiceController extends \BaseController {
 	            ->join('customers', 'customers.id', '=', 'invoices.customer_id')    
 	            ->where('customers.sid', 'like', '%'.$sid.'%')
 	            ->where('customers.name', 'like', '%'.$name.'%')
+	            ->where('invoices.user_id', '=', Auth::user()->id)// -------------------------------------------------only logged in user            
 	            // ->where('invoice.sent_date', 'like', '%'.$sent_date.'%')
 	            ->get();
 
-
-	        
 	        $paginate = false;
 	        return View::make('invoice.index')
 	        ->with('invoices',$invoices)
@@ -42,7 +41,8 @@ class InvoiceController extends \BaseController {
 		}else{
 		
 		$invoices = DB::table('invoices')
-            ->join('customers', 'customers.id', '=', 'invoices.customer_id')    
+            ->join('customers', 'customers.id', '=', 'invoices.customer_id')
+            ->where('invoices.user_id', '=', Auth::user()->id)// -------------------------------------------------only logged in user                
             ->orderBy('invoices.updated_at', 'desc')
             ->paginate(15);
 
@@ -78,7 +78,7 @@ class InvoiceController extends \BaseController {
 
 		$pdf = App::make('dompdf');
 
-		$customer = Customer::findOrFail($id);
+		$customer = Customer::where('user_id',Auth::user()->id)->findOrFail($id);
 		// return "<pre> print_r($customer) </pre>";
 		// return View::make('customers.pdf_template')->withCustomer($customer); //->with("customer",$customer)
 		$template = View::make('customers.pdf_template')->withCustomer($customer); //->with("customer",$customer)
@@ -118,7 +118,7 @@ class InvoiceController extends \BaseController {
 	{
 		
 
-		$customer = Customer::findOrFail($id);
+		$customer = Customer::where('user_id',Auth::user()->id)->findOrFail($id);
 		// $name = strtoupper(substr( $customer->name ,0,3)) . date("Y-m-d") . ".pdf";
 		$name = strtoupper(substr( $customer->name ,0,3)) ."-". rand(100000,20000) ."-". date("Y-m-d") . ".pdf";
 		
@@ -144,24 +144,14 @@ class InvoiceController extends \BaseController {
 	 */
 	public function edit($id)
 	{
-
-
-		  $email = Auth::user()->email;       
-	      $_user = DB::table('users')->where('email', '=', $email)->first();
-	      $user = DB::table('settings')->where('user_id', '=', $_user->id)->first();
-	      $settings = Setting::findOrFail($user->id);
-
 		
-
-
-
+	    $settings = Setting::where('user_id',Auth::user()->id)->first();	    
 		$pdf = App::make('dompdf');
-
-		$customer = Customer::findOrFail($id);
+		$customer = Customer::where('user_id',Auth::user()->id)->findOrFail($id);
 
 		// return "<pre> print_r($customer) </pre>";
 		// return View::make('customers.pdf_template')->withCustomer($customer); //->with("customer",$customer)
-		$template = View::make('customers.pdf_template')->withCustomer($customer)->with('settings',$settings); //->with("customer",$customer)
+		$template = View::make('customers.pdf_template')->withCustomer($customer)->with('settings',$settings); 
 		$pdf->loadHTML($template);
 		$pdf->setPaper('letter');
 
@@ -173,46 +163,41 @@ class InvoiceController extends \BaseController {
 		// return $stream;
 		
 		$insert = array();
-
 		$insert['invoice_id'] = $name;
 		$insert['customer_id'] = $customer->id;
+		$insert['user_id'] = Auth::user()->id;
 
 		Invoice::create($insert);
 
-		
 		// $pdf->set_base_path(realpath(APPLICATION_PATH . '../../public/css/bootstrap.css'));
 		
-	
 		$pdf->render();
 		file_put_contents('public/pdfs/'.$name, $pdf->output());
 		
 		
-
 		return Redirect::route('customers.edit',$id);
 		
-		
 		// return View::make('customers.display_pdf')->withStream($stream);
-		 
-
-		
 		// $output = $dompdf->output();
 		// file_put_contents("/pdf_path/file.pdf", $output);
-
 		
 	}
 
 	public function massUpload(){
 
-		
-		
-		
+	    // $email = Auth::user()->email;       
+	    // $_user = DB::table('users')->where('email', '=', $email)->first();
+	    // $user = DB::table('settings')->where('user_id', '=', $_user->id)->first();
+	    // $settings = Setting::findOrFail($user->id);
+        
+        $settings = Setting::where('user_id',Auth::user()->id)->first();	    
+	    $pdf = App::make('dompdf');
+	    // $customer = Customer::where('user_id',Auth::user()->id)->findOrFail($id);
 
-		  $email = Auth::user()->email;       
-	      $_user = DB::table('users')->where('email', '=', $email)->first();
-	      $user = DB::table('settings')->where('user_id', '=', $_user->id)->first();
-	      $settings = Setting::findOrFail($user->id);
-				
-		$customers_with_auto = DB::table('customers')->where('is_auto_invoice', '=', 1)->get();
+		$customers_with_auto = DB::table('customers')
+		->where('user_id',Auth::user()->id)
+		->where('is_auto_invoice', '=', 1)
+		->get();
 
 		foreach ($customers_with_auto as $customer) {
     		// return $customer->name;
@@ -239,10 +224,7 @@ class InvoiceController extends \BaseController {
 			$invoice_id = $name ;
 
 			// $invoice = DB::table('invoices')->where('invoice_id', '=', $invoice_id)->first();
-
-			
-			
-			
+	
 			// $controller = app()->make('App\Http\Controllers\phpMailerController');
 			
 			// app()->call([$controller, 'massSend'], $parameters);
@@ -250,18 +232,18 @@ class InvoiceController extends \BaseController {
 							// app('App\Http\Controllers\phpMailerContoller')->massSend($parameters);
 							
 						// REFACTOR THIS - get the user
-							$email = Auth::user()->email;
-							$user = DB::table('users')	            
-						    ->where('email', '=', $email)	           
-				            ->first();
-						     										// return var_dump($user->id);	     
-				            $userid = $user->id;
+							// $email = Auth::user()->email;
+							// $user = DB::table('users')	            
+						 //    ->where('email', '=', $email)	           
+				   //          ->first();
+						 //     										// return var_dump($user->id);	     
+				   //          $userid = $user->id;
 
-							$user = DB::table('settings')	            
-						    ->where('user_id', '=', $userid)	           
-				            ->first();
+							// $user = DB::table('settings')	            
+						 //    ->where('user_id', '=', $userid)	           
+				   //          ->first();
         
-					        $setting = Setting::findOrFail($user->id);
+					        // $setting = Setting::findOrFail($user->id);
 				            
 						//copy your signature from gmail by composing a message, then inspecting element, then copying the html and css into the $signature variable below. 
 						$signature = '
@@ -275,7 +257,7 @@ class InvoiceController extends \BaseController {
 						// require_once("PHPMailer/class.smtp.php");
 						$username = "kenprochnow@gmail.com";
 						
-						$password = $setting->email_token;
+						$password = $settings->email_token;
 						$mail = new PHPMailer(); // create a new object
 						$mail->IsSMTP(); // enable SMTP
 						// $mail->SMTPDebug = 1; // debugging: 1 = errors and messages, 2 = messages only
@@ -296,7 +278,6 @@ class InvoiceController extends \BaseController {
 						// Must specify line ending for csv file
 						ini_set('auto_detect_line_endings',true);
 
-
 						$spacer = '<br/><br/>';
 
 						/** 
@@ -310,8 +291,7 @@ class InvoiceController extends \BaseController {
 						// foreach($data as $row){
 
 						   $customer = Customer::findOrFail($customer_id);	
-						   // $invoice = Invoice::findOrFail($invoice_id);
-						   
+						   // $invoice = Invoice::findOrFail($invoice_id);					   
 
 						   //make an array of emails addresses. 
 						   $email_to = explode(",", $customer->email); 
@@ -321,7 +301,6 @@ class InvoiceController extends \BaseController {
 								{
 								   $mail->AddAddress($email);
 								}
-
 
 						   $email   = $customer->email;
 						   $subject = 'Prepay Invoice';
@@ -348,16 +327,8 @@ class InvoiceController extends \BaseController {
 						   }
 
 						   $mail->ClearAllRecipients();
-
-
-
 			};
 			
-			
-			
-		
-		
-		
 		return Redirect::route('customers.index');
 
 	}
@@ -385,7 +356,7 @@ class InvoiceController extends \BaseController {
 	{
 		// return $id;
 		// $customer = Customer::findOrFail($id)		
-		$invoice = Invoice::findOrFail($id);
+		$invoice = Invoice::where('user_id',Auth::user()->id)->findOrFail($id);
 		$customer_id = $invoice->customer_id;
 
 		if($invoice->sent_date == null){
