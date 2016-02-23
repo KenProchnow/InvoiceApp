@@ -59,7 +59,7 @@ ul,li{
     <ul class="nav navbar-nav">
       {{-- <li> {{ link_to_route('todos.index','ToDo List')}} </li>   
       <li> {{ link_to_route('expenses.index','Expenses')}} </li> --}}
-      <li> {{ link_to_route('customers.index','Customers')}} </li>  
+      <li > {{ link_to_route('customers.index','Customers')}} </li>  
       <li> <a href="{{ action("InvoiceController@index") }}">Invoices</a></li>   
       <li> <a href="{{ action("AnalyticsController@customers") }}">Customer Analytics</a></li>   
       <li> <a href="{{ action("AnalyticsController@stats") }}">Customer Stats</a></li>   

@@ -139,7 +139,8 @@
 	    <th>file name</th>
 	    <th>sent_date</th>
 	    <th>view Invoice</th>
-	    <th>send</th>		        
+	    <th>send</th>
+	    <th>delete</th>		        
 	  </tr>
 	</thead>
 	<tbody>
@@ -157,7 +158,8 @@
 
 			<td>
 			{{Form::model($invoice, ['route' => ['invoices.destroy',$invoice->id], 'method'=>'delete' ] ) }}
-				{{Form::button('delete', ['type'=>'submit','class'=>'btn btn-sm btn-danger'])}}
+				{{-- {{Form::button('delete', ['type'=>'submit','class'=>'btn btn-sm btn-danger'])}} --}}
+				<button type="submit" value="" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-trash"></span></button>
 			{{Form::close() }}
 		    </td>
 				

@@ -88,7 +88,7 @@
                     </td>
                     <td width="30%">
                         <h3 style="margin:0px;padding:0px;">Invoice: </h3> 
-                        {{ $name = strtoupper(substr( $customer->name ,0,3)) ."-". rand(100000,20000) ."-". date("Y-m-d") . ".pdf"; }}
+                        {{ $name = strtoupper(substr( $customer->name ,0,3)) ."-". rand(100000,20000) ."-". date("Y-m-d"); }}
                         <br><br>
                         
                         <h3 style="margin:0px;padding:0px;">Date: </h3> 

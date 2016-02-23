@@ -173,7 +173,7 @@ Route::post('/register', function(){
 
 });
 
-
+Route::get('/', 'HomeController@index');
 
 Route::get('/password/remind', 'RemindersController@getRemind');
 Route::post('/password/remind', 'RemindersController@postRemind');
@@ -181,7 +181,7 @@ Route::post('/password/remind', 'RemindersController@postRemind');
 Route::get('/password/reset/{token}', 'RemindersController@getReset');
 Route::post('/password/reset', 'RemindersController@postReset');
 
-Route::get('/', 'CustomersController@index');
+
 // Route::resource('/phpmailer/{customer_id}/edit/{invoice_id}', 'phpMailerController@edit');
 
 	
@@ -189,22 +189,16 @@ Route::get('/', 'CustomersController@index');
 
 Route::group(['before' => 'auth'], function()
 {
-Route::get('/stats', array('as' => 'stats', 'uses' => 'AnalyticsController@stats'));
-Route::get('/analytics', array('as' => 'analytics', 'uses' => 'AnalyticsController@customers'));
-
-Route::get('/customers/pdf', 'CustomersController@pdf');
-
-Route::get('/Invoice/massUpload', 'InvoiceController@massUpload');
-
-
-
-Route::post('/customers/ajaxupdate/{id}/{value}/', 'CustomersController@updateCustomerRecord');
-
-   	Route::resource('/settings', 'SettingsController');
+	Route::get('/customers', 'CustomersController@index');
+	Route::get('/stats', array('as' => 'stats', 'uses' => 'AnalyticsController@stats'));
+	Route::get('/analytics', array('as' => 'analytics', 'uses' => 'AnalyticsController@customers'));
+	Route::get('/Invoice/massUpload', 'InvoiceController@massUpload');
+	Route::get('/customers/pdf', 'CustomersController@pdf');
+	Route::post('/customers/ajaxupdate/{id}/{value}/', 'CustomersController@updateCustomerRecord');   
 	Route::get('/customers/export', 'CustomersController@export');
 	// Route::post('/settings/upload', 'SettingsController@upload');
 	
-
+	Route::resource('/settings', 'SettingsController');
 	Route::resource('/todos', 'TodoListController');
 	Route::resource('/expenses', 'ExpensesController');
 	Route::resource('/customers',  'CustomersController' );
