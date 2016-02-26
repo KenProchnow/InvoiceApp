@@ -90,6 +90,14 @@
 </div>
 
 <div class="form-group">
+    <label for="inputEmail3" class="col-sm-2 control-label">Gmail Signature</label>
+    <div class="col-sm-10">
+{{ Form::text('signature','',array('class' => 'form-control', 'placeholder' => 'your signature')) }}
+    </div>
+</div>
+
+
+<div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
       {{ Form::submit('Update',array('class'=>'btn btn-info')) }}  
     </div>

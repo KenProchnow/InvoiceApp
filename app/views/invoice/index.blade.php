@@ -44,7 +44,7 @@
 
 
 
-<h2>Invoices:</h2>
+<h2>Invoice History:</h2>
 <table class="table table-striped">	
 <thead>
 	<tr>

@@ -31,18 +31,8 @@ ul,li{
 {{-- @if ($email = Auth::user()->email ) --}}
   {{-- {{ $email }} --}}
 {{-- @endif --}}
-{{--
-{{
 
-      $email = Auth::user()->email;       
-      $_user = DB::table('users')->where('email', '=', $email)->first();
-                            
-          
-      $user = DB::table('settings')->where('user_id', '=', $_user->id)->first();
-      $settings = Setting::findOrFail($user->id);
-              
-}}     
---}}    
+    
 
 
 <nav class="navbar navbar-inverse">
@@ -50,16 +40,19 @@ ul,li{
     <div class="navbar-header">
 
      <li>
-      
-      {{-- {{ HTML::image("images/logo3.png", '', array('width'=>140,'style'=>'padding: 5px' ) ) }}  --}}
+      <a href="{{ action("HomeController@index") }}"> 
+      {{ HTML::image("images/invoicePilotLogo.png", '', array('width'=>50,'style'=>'padding: 5px' ) ) }} 
+      </a>
       {{--{{ HTML::image('uploads/logo/'.$settings->logo,'logo',array('height' => '50px')) }}       
+
       &nbsp; &nbsp; &nbsp;&nbsp;  </li>
       --}}  
     </div>
     <ul class="nav navbar-nav">
       {{-- <li> {{ link_to_route('todos.index','ToDo List')}} </li>   
       <li> {{ link_to_route('expenses.index','Expenses')}} </li> --}}
-      <li > {{ link_to_route('customers.index','Customers')}} </li>  
+      <li><a class="navbar-brand" href="{{ action("HomeController@index") }}">Invoice Pilot</a></li>
+      <li> {{ link_to_route('customers.index','Customers')}} </li>
       <li> <a href="{{ action("InvoiceController@index") }}">Invoices</a></li>   
       <li> <a href="{{ action("AnalyticsController@customers") }}">Customer Analytics</a></li>   
       <li> <a href="{{ action("AnalyticsController@stats") }}">Customer Stats</a></li>   
@@ -74,8 +67,16 @@ ul,li{
 
       
       @if (Auth::check())
+          <?php
+          $id = Auth::user()->id;      
+          $user = DB::table('settings')->where('user_id', '=', $id)->first();
+          $settings = Setting::findOrFail($user->id);
+          ?>
+      
       <li><a href="#"><span class="glyphicon glyphicon-user"></span> {{{ isset(Auth::user()->name) ? Auth::user()->name : Auth::user()->email }}}</a></li>
+      <li style="margin-top:8px">{{ HTML::image('uploads/logo/'.$settings->logo,'logo',array('height' => '30px')) }}</li>
       <li><a href="{{ url('logout') }}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+
       
       @else
         <li><a href="{{ url('register') }}"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
