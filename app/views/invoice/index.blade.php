@@ -36,6 +36,17 @@
     &nbsp;&nbsp;
   </div>
 
+  <div class="form-group">
+    <label for="exampleInputEmail2">Search Date</label>   
+    <select name="sent_date" class="form-control" >
+    	<option value="" selected> </option>
+    	@foreach($sent_dates as $sent_date)    	
+    	<option value="{{ $sent_date }}">{{ $sent_date }}</option>
+    	@endforeach
+    </select>
+    &nbsp;&nbsp;
+  </div>
+
   
 
 	{{Form::button('submit', ['type'=>'submit','class'=>'btn btn-sm btn-default'])}}

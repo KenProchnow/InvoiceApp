@@ -263,10 +263,7 @@ class CustomersController extends \BaseController {
 	 * @return Response
 	 */
 	public function edit($id)
-	{
-		
-		
-		
+	{	
 		
 		$customer = Customer::where('user_id',Auth::user()->id)->findOrFail($id);// -------------------------------------------------only logged in user			
 

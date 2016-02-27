@@ -14,7 +14,7 @@ class InvoiceController extends \BaseController {
 		// var_dump($invoices);
 
 		
-		if(Input::get('sid') || Input::get('name') ){
+		if(Input::get('sid') || Input::get('name') || Input::get('sent_date') ){
 			// Sets the parameters from the get request to the variables.
 	        $sid = Input::get('sid');
 	        $name = Input::get('name');
@@ -27,8 +27,13 @@ class InvoiceController extends \BaseController {
 	            ->where('customers.sid', 'like', '%'.$sid.'%')
 	            ->where('customers.name', 'like', '%'.$name.'%')
 	            ->where('invoices.user_id', '=', Auth::user()->id)// -------------------------------------------------only logged in user            
-	            // ->where('invoice.sent_date', 'like', '%'.$sent_date.'%')
+	            ->where('invoices.sent_date', 'like', '%'.$sent_date.'%')
 	            ->get();
+
+// $query = "SELECT * FROM invoices WHERE DATE_FORMAT(sent_date, '%Y-%m') = '$date' ";
+// $invoices = DB::select(DB::raw($query)); 
+
+	        $sent_dates = Invoice::dates();
 
 	        $paginate = false;
 	        return View::make('invoice.index')
@@ -36,7 +41,8 @@ class InvoiceController extends \BaseController {
 	        ->with('paginate',$paginate)
 	        ->with('sid',$sid)
 	        ->with('name',$name)
-	        ->with('sent_date',$sent_date);
+	        ->with('sent_date',$sent_date)
+	        ->with('sent_dates',$sent_dates);
 
 		}else{
 		
@@ -53,12 +59,16 @@ class InvoiceController extends \BaseController {
         $name = "";
         $sent_date = "";
 
-		return View::make('invoice.index')
+		$sent_dates = Invoice::dates();
+
+		// dd($dates);
+
+		return View::make('invoice.index')->with('sent_dates',$sent_dates)
 		->with('invoices',$invoices)
 		->with('paginate',$paginate)
 		->with('sid',$sid)
         ->with('name',$name)
-        ->with('sent_date',$sent_date);
+        ->with('sent_dates',$sent_dates);
 		// return View::make('invoice.index')->with('invoices',$invoices);
 		// return var_dump($invoices);
 		}
