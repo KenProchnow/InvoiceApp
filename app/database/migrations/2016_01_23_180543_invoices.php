@@ -17,6 +17,7 @@ class Invoices extends Migration {
 			$table->increments('id');
 			$table->string('invoice_id')->unique();
 			$table->string('customer_id');
+			$table->decimal('prepay_amount',(7,2));
 			$table->timestamps();
 		});
 	}

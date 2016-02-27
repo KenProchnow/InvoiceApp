@@ -61,6 +61,7 @@
 	<tr>
 		
 		<th>customer sid</th> 
+		<th>prepay amount</th> 
 		<th>invoice_id</th>
 		<th>customer_name</th>
 		<th>customer created_at</th>
@@ -87,6 +88,7 @@
 
 		
 		<td> {{ $invoice->sid }} </td>	
+		<td> {{ $invoice->prepay_amount }} </td>
 		<td> {{ $invoice->invoice_id }} </td>	
 		<td> {{ $invoice->name }} </td>	
 		<td> {{ $invoice->created_at }} </td>	

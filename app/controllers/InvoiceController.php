@@ -22,12 +22,22 @@ class InvoiceController extends \BaseController {
 
 	        // Perform the query using Query Builder
 	        $invoices = DB::table('invoices')	            
-	            // ->where('name', '=', '%'.$name.'%')
+	            // ->where('name', '=', '%'.$name.'%')  
+	            ->select(
+	            	'customers.sid',
+	            	'invoices.prepay_amount',
+	            	'invoices.sent_date',
+	            	'invoices.invoice_id',
+	            	'customers.name',
+	            	'customers.created_at',
+	            	'customers.updated_at'
+	            	)              
 	            ->join('customers', 'customers.id', '=', 'invoices.customer_id')    
 	            ->where('customers.sid', 'like', '%'.$sid.'%')
 	            ->where('customers.name', 'like', '%'.$name.'%')
 	            ->where('invoices.user_id', '=', Auth::user()->id)// -------------------------------------------------only logged in user            
 	            ->where('invoices.sent_date', 'like', '%'.$sent_date.'%')
+	            ->orderBy('invoices.updated_at', 'desc')
 	            ->get();
 
 // $query = "SELECT * FROM invoices WHERE DATE_FORMAT(sent_date, '%Y-%m') = '$date' ";
@@ -47,6 +57,16 @@ class InvoiceController extends \BaseController {
 		}else{
 		
 		$invoices = DB::table('invoices')
+			// ->select('customers.sid', 'invoices.name', 'invoices.prepay_amount','invoices.id','invoices.sent_date','invoices.invoice_id' )	            			
+			->select(
+	            	'customers.sid',
+	            	'invoices.prepay_amount',
+	            	'invoices.sent_date',
+	            	'invoices.invoice_id',
+	            	'customers.name',
+	            	'customers.created_at',
+	            	'customers.updated_at'
+	            	)
             ->join('customers', 'customers.id', '=', 'invoices.customer_id')
             ->where('invoices.user_id', '=', Auth::user()->id)// -------------------------------------------------only logged in user                
             ->orderBy('invoices.updated_at', 'desc')
@@ -66,7 +86,7 @@ class InvoiceController extends \BaseController {
 		return View::make('invoice.index')->with('sent_dates',$sent_dates)
 		->with('invoices',$invoices)
 		->with('paginate',$paginate)
-		->with('sid',$sid)
+		->with('sid',$sid)				
         ->with('name',$name)
         ->with('sent_dates',$sent_dates);
 		// return View::make('invoice.index')->with('invoices',$invoices);
@@ -172,10 +192,15 @@ class InvoiceController extends \BaseController {
 		// $stream = $pdf->stream();
 		// return $stream;
 		
+		// dd($customer->prepay_amount);
+
 		$insert = array();
 		$insert['invoice_id'] = $name;
 		$insert['customer_id'] = $customer->id;
+		$insert['prepay_amount'] = $customer->prepay_amount;
 		$insert['user_id'] = Auth::user()->id;
+
+
 
 		Invoice::create($insert);
 
@@ -224,6 +249,8 @@ class InvoiceController extends \BaseController {
 
 			$insert['invoice_id'] = $name;
 			$insert['customer_id'] = $customer->id;
+			$insert['prepay_amount'] = $customer->prepay_amount;
+			$insert['user_id'] = Auth::user()->id;
 
 			Invoice::create($insert);
 		
@@ -326,9 +353,17 @@ class InvoiceController extends \BaseController {
 						   
 						   $mail->Body = $body; 
 
+						  
+
 						   if($mail->Send() ){
 							   $today = date('Y-m-d', strtotime('now'));
-							   DB::table('invoices')->where('invoice_id', $invoice_id )->update(array('sent_date' => $today ));	
+
+							   
+
+							   DB::table('invoices')
+							   ->where('invoice_id', $invoice_id )
+							   ->update(array('sent_date' => $today, 'prepay_amount' => $customer->prepay_amount ));	
+
 							   $message_status = "success";
 							   $message = "Sent Email";
 						   } else {

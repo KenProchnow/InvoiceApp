@@ -110,7 +110,7 @@ class Customer extends Eloquent{
 			$user_id = Auth::user()->id;
 
 	    	$query = "
-	    		SELECT name as x,  sum(prepay_amount) as y FROM laravel.invoices i
+	    		SELECT name as x,  sum(c.prepay_amount) as y FROM laravel.invoices i
 				join laravel.customers c on c.id = i.customer_id 
                 where i.sent_date is not null
                 and c.user_id = {$user_id}
@@ -133,7 +133,7 @@ class Customer extends Eloquent{
 			$user_id = Auth::user()->id;
 
 	    	$query = "
-	    		SELECT name as x,  sum(prepay_amount) as y FROM laravel.invoices i
+	    		SELECT name as x,  sum(c.prepay_amount) as y FROM laravel.invoices i
 				join laravel.customers c on c.id = i.customer_id 
                 where i.sent_date is not null
                 and c.user_id = {$user_id}
@@ -158,7 +158,7 @@ class Customer extends Eloquent{
 			$user_id = Auth::user()->id;
 
 	    	$query = "
-	    		SELECT name as x,  sum(prepay_amount) as y FROM laravel.invoices i
+	    		SELECT name as x,  sum(c.prepay_amount) as y FROM laravel.invoices i
 				join laravel.customers c on c.id = i.customer_id 
                 where i.sent_date is not null
                 and c.user_id = {$user_id}

@@ -195,7 +195,7 @@ class phpMailerController extends \BaseController {
 
 		   if($mail->Send() ){
 			   $today = date('Y-m-d', strtotime('now'));
-			   DB::table('invoices')->where('id', $invoice->id )->update(array('sent_date' => $today ));	
+			   DB::table('invoices')->where('id', $invoice->id )->update(array('sent_date' => $today,'prepay_amount' => $customer->prepay_amount  ));	
 			   $message_status = "success";
 			   $message = "Sent Email";
 		   } else {

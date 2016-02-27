@@ -138,6 +138,7 @@
 	    <th>created_at</th>
 	    <th>file name</th>
 	    <th>sent_date</th>
+	    <th>invoiced amount</th>
 	    <th>view Invoice</th>
 	    <th>send</th>
 	    <th>delete</th>		        
@@ -151,7 +152,8 @@
 			<td> {{ $invoice->invoice_id }} </td>
 			<td> {{ $invoice->created_at }} </td>
 			<td> {{ $invoice->invoice_id }} </td> 
-			<td> {{ $invoice->sent_date }} </td> 
+			<td> {{ $invoice->sent_date }} </td>
+			<td> {{ $invoice->prepay_amount }} </td> 
 			<td> {{ link_to('pdfs/'.$invoice->invoice_id, 'View Invoice') }}  </td> 
 			<td> {{ link_to_route('phpmailer.edit','Send Invoice',$paramters = array('customer_id'=>$customer->id,'invoice_id'=>$invoice->id),['class'=>'btn btn-sm btn-default'] ) }}  </td> 
 			
