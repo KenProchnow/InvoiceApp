@@ -12,11 +12,13 @@ ul,li{
 {{ HTML::script('https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js') }}
 <script src=" {{asset('js/bootstrap.js')}} " ></script>
 
+
+
 {{-- <link rel="stylesheet" type="text/css" href="css/bootstrap.css">  --}}
 <link rel="stylesheet" type="text/css" href=" {{ asset('css/bootstrap.css') }} "> 
 <link rel="stylesheet" type="text/css" href=" {{ asset('css/styles.css') }} "> 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css">
-
+<link href='https://fonts.googleapis.com/css?family=Abel' rel='stylesheet' type='text/css'>
 
 <html lang="en">
 <head>
